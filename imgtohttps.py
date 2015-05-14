@@ -1,5 +1,5 @@
 from flask import Flask, request, abort
-from urllib.parse import urlparse
+from urllib.parse import urlparse, ParseResult
 
 app = Flask(__name__)
 
@@ -8,15 +8,38 @@ def get_from_registry(link):
     raise NotImplementedError
 
 
-class Link(object):
-    raise NotImplementedError
+class EmptyUrlError(Exception):
+    pass
+
+
+class Link:
+    secure_scheme = 'https'
+    __data = None
+
+    def __init__(self, raw_url):
+        fragments = urlparse(raw_url)
+        if not any(fragments):
+            raise EmptyUrlError()
+        else:
+            self.__data = fragments
+
+    def __repr__(self):
+        return repr(self.__data)
+
+    @property
+    def is_secure(self):
+        return self.__data.scheme == self.secure_scheme
+
+    @property
+    def secure(self):
+        return ParseResult(self.secure_scheme, *self.__data[1:]).geturl()
 
 
 def has_secure_domain(link):
     raise NotImplementedError
 
 
-def upload(parsed_link):
+def upload(link):
     raise NotImplementedError
 
 
@@ -30,15 +53,15 @@ def index():
     if raw_link is None:
         abort(404)
 
-    parsed_link = Link(raw_link)
+    link = Link(raw_link)
 
-    if parsed_link.is_secure:
-        return raw_link
+    if link.is_secure:
+        return link.secure
     else:
-        if has_secure_domain(parsed_link):
-            return parsed_link.secure
+        if has_secure_domain(link):
+            return link.secure
         else:
-            return upload(parsed_link)
+            return upload(link)
 
 
 if __name__ == '__main__':

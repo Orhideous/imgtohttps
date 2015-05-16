@@ -1,0 +1,9 @@
+Flask
+Flask-Redis
+imgurpython
+itsdangerous
+Jinja2
+MarkupSafe
+redis
+requests
+Werkzeug

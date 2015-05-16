@@ -18,6 +18,7 @@ def has_secure_domain(link):
     try:
         resp = requests.head(link.secure)
     except requests.exceptions.RequestException:
+        storage.insecure_domains.add(link)
         return False
 
     if resp.status_code == 200:

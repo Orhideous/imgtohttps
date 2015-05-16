@@ -4,7 +4,7 @@ from flask import Flask
 from flask.ext.redis import FlaskRedis
 from imgurpython import ImgurClient
 
-from lib import LinkSet, LinksMapping, LinkRegistry, EmptyUrlError
+from lib import LinkSet, LinksMapping, LinkRegistry, ImgError
 from logic import process
 
 
@@ -25,7 +25,7 @@ imgur_client = ImgurClient(app.config['IMGUR_CLIENT_ID'], app.config['IMGUR_CLIE
 def index():
     try:
         return process(request.data)
-    except EmptyUrlError:
+    except ImgError:
         return ''
 
 if __name__ == '__main__':

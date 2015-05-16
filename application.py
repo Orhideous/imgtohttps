@@ -1,10 +1,10 @@
 from os import environ
-from flask import request, abort
+from flask import request
 from flask import Flask
 from flask.ext.redis import FlaskRedis
 from imgurpython import ImgurClient
 
-from lib import LinkSet, LinksMapping, LinkRegistry
+from lib import LinkSet, LinksMapping, LinkRegistry, EmptyUrlError
 from logic import process
 
 
@@ -15,6 +15,7 @@ storage = FlaskRedis()
 storage.init_app(app)
 
 secure_domains = LinkSet(storage, 'secure_domains')
+insecure_domains = LinkSet(storage, 'insecure_domains')
 already_uploaded_links = LinksMapping(storage, 'already_uploaded_links')
 image_registry = LinkRegistry(storage, 'image_')
 imgur_client = ImgurClient(app.config['IMGUR_CLIENT_ID'], app.config['IMGUR_CLIENT_SECRET'])
@@ -22,18 +23,10 @@ imgur_client = ImgurClient(app.config['IMGUR_CLIENT_ID'], app.config['IMGUR_CLIE
 
 @app.route('/', methods=['POST'])
 def index():
-    if not request.data:
-        abort(404)
-    result = process(request.data)
-    if result is None:
-        abort(404)
-
-    return result
-
-
-@app.errorhandler(404)
-def page_not_found():
-    return '', 404
+    try:
+        return process(request.data)
+    except EmptyUrlError:
+        return ''
 
 if __name__ == '__main__':
     app.run()

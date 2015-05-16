@@ -18,7 +18,10 @@ class RedisContainer:
 class LinkSet(RedisContainer, Container):
 
     def __contains__(self, link):
-        return self.__storage.sismember(self.name, link.url)
+        return self.__storage.sismember(self.name, link.netloc)
+
+    def add(self, link):
+        self.__storage.sadd(self.name, link.netloc)
 
 
 class LinksMapping(RedisContainer, Container):
@@ -26,8 +29,7 @@ class LinksMapping(RedisContainer, Container):
     def __contains__(self, link):
         return self.__storage.hexists(self.name, link.url)
 
-    def __iadd__(self, other):
-        link, uploaded = other
+    def add(self, link, uploaded):
         self.__storage.hset(self.name, link.url, uploaded.secure)
 
     def __getitem__(self, link):

@@ -1,8 +1,14 @@
+from collections.abc import Container
 from urllib.parse import ParseResult, urlparse
 
 
 class EmptyUrlError(Exception):
     pass
+
+
+class DomainRegistry(Container):
+    def __contains__(self, item):
+        pass
 
 
 class Link:

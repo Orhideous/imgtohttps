@@ -89,7 +89,7 @@ class LinkRegistry(RedisContainer):
 
 class Link:
     secure_scheme = 'https'
-    __data = None
+    _data = None
 
     def __init__(self, raw_url):
         """ Construct Link instance with some useful methods
@@ -100,17 +100,17 @@ class Link:
         if not any(fragments):
             raise ImgError()
         else:
-            self.__data = fragments
+            self._data = fragments
 
     def __repr__(self):
-        return repr(self.__data)
+        return repr(self._data)
 
     @property
     def is_secure(self):
         """
         :rtype : str
         """
-        return self.__data.scheme == self.secure_scheme
+        return self._data.scheme == self.secure_scheme
 
     @property
     def secure(self):
@@ -119,11 +119,11 @@ class Link:
         """
         if self.is_secure:
             return self.url
-        return ParseResult(self.secure_scheme, *self.__data[1:]).geturl()
+        return ParseResult(self.secure_scheme, *self._data[1:]).geturl()
 
     @property
     def url(self):
         """
         :rtype : str
         """
-        return self.__data.get_url()
+        return self._data.get_url()

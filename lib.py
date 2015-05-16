@@ -9,7 +9,7 @@ class ImgError(Exception):
 class RedisContainer:
     """ Redis container"""
 
-    __storage = None
+    _storage = None
     name = None
 
     def __init__(self, storage, name):
@@ -21,7 +21,7 @@ class RedisContainer:
         :param name: Key name or prefix
         """
 
-        self.__storage = storage
+        self._storage = storage
         self.name = name
 
 
@@ -35,13 +35,13 @@ class LinkSet(RedisContainer, Container):
         :type link: Link
         :rtype : bool
         """
-        return self.__storage.sismember(self.name, link.netloc)
+        return self._storage.sismember(self.name, link.netloc)
 
     def add(self, link):
         """
         :type link: Link
         """
-        self.__storage.sadd(self.name, link.netloc)
+        self._storage.sadd(self.name, link.netloc)
 
 
 class LinksMapping(RedisContainer, Container):
@@ -53,14 +53,14 @@ class LinksMapping(RedisContainer, Container):
         """
         :type link: Link
         """
-        return self.__storage.hexists(self.name, link.url)
+        return self._storage.hexists(self.name, link.url)
 
     def add(self, link, uploaded):
         """
         :type link: Link
         :type uploaded: Link
         """
-        self.__storage.hset(self.name, link.url, uploaded.secure)
+        self._storage.hset(self.name, link.url, uploaded.secure)
 
     def __getitem__(self, link):
         """
@@ -70,7 +70,7 @@ class LinksMapping(RedisContainer, Container):
         if not isinstance(link, Link):
             raise TypeError
 
-        result = self.__storage.hget(self.name, link.url)
+        result = self._storage.hget(self.name, link.url)
         if result is None:
             raise KeyError
 
@@ -84,7 +84,7 @@ class LinkRegistry(RedisContainer):
         """
         :type data: dict[str, str|int|None]
         """
-        self.__storage.hmset(self.name + data['link'], data)
+        self._storage.hmset(self.name + data['link'], data)
 
 
 class Link:

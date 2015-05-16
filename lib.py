@@ -6,9 +6,43 @@ class EmptyUrlError(Exception):
     pass
 
 
-class DomainRegistry(Container):
-    def __contains__(self, item):
-        pass
+class UploadError(Exception):
+    pass
+
+
+class RedisContainer:
+    __storage = None
+    name = None
+
+    def __init__(self, storage, name):
+        self.__storage = storage
+        self.name = name
+
+
+class RedisLinkSet(RedisContainer, Container):
+
+    def __contains__(self, link):
+        return self.__storage.sismember(self.name, link.url)
+
+
+class RedisLinkHash(RedisContainer, Container):
+
+    def __contains__(self, link):
+        return self.__storage.hexists(self.name, link.url)
+
+    def __iadd__(self, other):
+        link, uploaded = other
+        self.__storage.hset(self.name, link.url, uploaded.url)
+
+    def __getitem__(self, link):
+        if not isinstance(link, Link):
+            raise TypeError
+
+        result = self.__storage.hget(self.name, link.url)
+        if result is None:
+            raise KeyError
+
+        return result
 
 
 class Link:
@@ -31,4 +65,10 @@ class Link:
 
     @property
     def secure(self):
+        if self.is_secure:
+            return self.url
         return ParseResult(self.secure_scheme, *self.__data[1:]).geturl()
+
+    @property
+    def url(self):
+        return self.__data.get_url()

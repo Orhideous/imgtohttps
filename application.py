@@ -22,18 +22,18 @@ imgur_client = ImgurClient(app.config['IMGUR_CLIENT_ID'], app.config['IMGUR_CLIE
 
 @app.route('/', methods=['POST'])
 def index():
-    payload = request.get_json()
-    if payload is None:
+    if not request.data:
         abort(404)
-    raw_link = payload.get('link')
-    if raw_link is None:
-        abort(404)
-    result = process(raw_link)
+    result = process(request.data)
     if result is None:
         abort(404)
 
     return result
 
+
+@app.errorhandler(404)
+def page_not_found():
+    return '', 404
 
 if __name__ == '__main__':
     app.run()

@@ -6,10 +6,6 @@ class EmptyUrlError(Exception):
     pass
 
 
-class UploadError(Exception):
-    pass
-
-
 class RedisContainer:
     __storage = None
     name = None
@@ -19,20 +15,20 @@ class RedisContainer:
         self.name = name
 
 
-class RedisLinkSet(RedisContainer, Container):
+class LinkSet(RedisContainer, Container):
 
     def __contains__(self, link):
         return self.__storage.sismember(self.name, link.url)
 
 
-class RedisLinkHash(RedisContainer, Container):
+class LinksMapping(RedisContainer, Container):
 
     def __contains__(self, link):
         return self.__storage.hexists(self.name, link.url)
 
     def __iadd__(self, other):
         link, uploaded = other
-        self.__storage.hset(self.name, link.url, uploaded.url)
+        self.__storage.hset(self.name, link.url, uploaded.secure)
 
     def __getitem__(self, link):
         if not isinstance(link, Link):
@@ -43,6 +39,12 @@ class RedisLinkHash(RedisContainer, Container):
             raise KeyError
 
         return result
+
+
+class LinkRegistry(RedisContainer):
+
+    def update(self, data):
+        self.__storage.hmset(self.name + data['link'], data)
 
 
 class Link:

@@ -1,9 +1,9 @@
 from imgurpython.helpers.error import ImgurClientError
 import requests
+from flask import current_app
 
 from lib import Link, ImgError
-from application import secure_domains, insecure_domains
-from application import already_uploaded_links, imgur_client, image_registry
+import storage
 
 
 def has_secure_domain(link):
@@ -21,10 +21,10 @@ def has_secure_domain(link):
         return False
 
     if resp.status_code == 200:
-        secure_domains.add(link)
+        storage.secure_domains.add(link)
         return True
     else:
-        insecure_domains.add(link)
+        storage.insecure_domains.add(link)
         return False
 
 
@@ -39,13 +39,13 @@ def upload(link):
     """
 
     try:
-        result = imgur_client.upload_from_url(link.url)
+        result = current_app.imgur_client.upload_from_url(link.url)
     except ImgurClientError as e:
         raise ImgError from e
     else:
         uploaded = Link(result['link'])
-        image_registry.update(result)
-        already_uploaded_links.add(link, uploaded)
+        storage.image_registry.update(result)
+        storage.already_uploaded_links.add(link, uploaded)
         return uploaded
 
 
@@ -61,13 +61,13 @@ def process(raw_link):
 
     link = Link(raw_link)
 
-    if link in already_uploaded_links:
-        return already_uploaded_links[link]
+    if link in storage.already_uploaded_links:
+        return storage.already_uploaded_links[link]
 
-    if link in insecure_domains:
+    if link in storage.insecure_domains:
         return upload(link).secure
 
-    if link.is_secure or link in secure_domains or has_secure_domain(link):
+    if link.is_secure or link in storage.secure_domains or has_secure_domain(link):
         return link.secure
 
     return upload(link).secure

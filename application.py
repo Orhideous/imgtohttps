@@ -18,7 +18,7 @@ app.imgur_client = ImgurClient(app.config['IMGUR_CLIENT_ID'], app.config['IMGUR_
 @app.route('/', methods=['POST'])
 def index():
     try:
-        return process(str(request.data))
+        return process(request.data.decode())
     except ImgError:
         return ''
 

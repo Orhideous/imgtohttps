@@ -126,4 +126,4 @@ class Link:
         """
         :rtype : str
         """
-        return self._data.get_url()
+        return self._data.geturl()

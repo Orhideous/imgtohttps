@@ -1,3 +1,4 @@
+from os import environ
 from flask import request, abort
 from flask import Flask
 from flask.ext.redis import FlaskRedis
@@ -8,6 +9,7 @@ from logic import process
 
 storage = FlaskRedis()
 app = Flask(__name__)
+app.config.from_object(environ.get('APP_SETTINGS', 'config.Development'))
 storage.init_app(app)
 
 secure_domains = RedisLinkSet(storage, 'secure_domains')

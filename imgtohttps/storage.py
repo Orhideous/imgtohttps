@@ -1,5 +1,7 @@
 from flask.ext.redis import FlaskRedis
-from lib import LinkSet, LinksMapping, LinkRegistry
+
+from imgtohttps.lib import LinkSet, LinksMapping, LinkRegistry
+
 
 storage = FlaskRedis()
 

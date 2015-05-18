@@ -1,8 +1,8 @@
 import requests
 from flask import current_app
 
-from lib import Link
-import storage
+from imgtohttps import storage
+from imgtohttps.lib import Link
 
 
 def has_secure_domain(link):

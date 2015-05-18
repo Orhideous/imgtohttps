@@ -6,9 +6,9 @@ from imgurpython.helpers import error as imgur_exc
 from redis import exceptions as redis_exc
 from werkzeug.exceptions import BadRequest
 
-from lib import EmptyUrlError
-from logic import process
-from storage import storage
+from imgtohttps.lib import EmptyUrlError
+from imgtohttps.logic import process
+from imgtohttps.storage import storage
 
 
 EXCEPTIONS = (

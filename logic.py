@@ -1,8 +1,7 @@
-from imgurpython.helpers.error import ImgurClientError
 import requests
 from flask import current_app
 
-from lib import Link, ImgError
+from lib import Link
 import storage
 
 
@@ -16,7 +15,7 @@ def has_secure_domain(link):
     """
 
     try:
-        resp = requests.head(link.secure)
+        resp = requests.head(link.secure, timeout=3)
     except requests.exceptions.RequestException:
         storage.insecure_domains.add(link)
         return False
@@ -39,15 +38,11 @@ def upload(link):
     :raise ImgError:
     """
 
-    try:
-        result = current_app.imgur_client.upload_from_url(link.url)
-    except ImgurClientError as e:
-        raise ImgError from e
-    else:
-        uploaded = Link(result['link'])
-        storage.image_registry.update(result)
-        storage.already_uploaded_links.add(link, uploaded)
-        return uploaded
+    result = current_app.imgur_client.upload_from_url(link.url)
+    uploaded = Link(result['link'])
+    storage.image_registry.update(result)
+    storage.already_uploaded_links.add(link, uploaded)
+    return uploaded
 
 
 def process(raw_link):

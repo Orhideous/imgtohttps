@@ -2,8 +2,8 @@ from collections.abc import Container
 from urllib.parse import ParseResult, urlparse
 
 
-class ImgError(Exception):
-    """ Common exception for different nasty errors"""
+class EmptyUrlError(Exception):
+    """ Exception for empty urls"""
 
 
 class RedisContainer:
@@ -103,7 +103,7 @@ class Link:
         """
         fragments = urlparse(raw_url)
         if not any(fragments):
-            raise ImgError()
+            raise EmptyUrlError('Incorrect url')
         else:
             for key, value in fragments._asdict().items():
                 setattr(self, key, value)

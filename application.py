@@ -1,13 +1,24 @@
 from os import environ
 
-from flask import request
-from flask import Flask
-from imgurpython import ImgurClient
+from flask import request, Flask, jsonify
+from imgurpython.client import ImgurClient
+from imgurpython.helpers import error as imgur_exc
+from redis import exceptions as redis_exc
+from werkzeug.exceptions import BadRequest
 
-from lib import ImgError
+from lib import EmptyUrlError
 from logic import process
 from storage import storage
 
+
+EXCEPTIONS = (
+    KeyError,
+    TypeError,
+    BadRequest,
+    EmptyUrlError,
+    imgur_exc.ImgurClientError,
+    redis_exc.ConnectionError
+)
 
 app = Flask(__name__)
 app.config.from_object(environ.get('APP_SETTINGS', 'config.Development'))
@@ -17,11 +28,14 @@ app.imgur_client = ImgurClient(app.config['IMGUR_CLIENT_ID'], app.config['IMGUR_
 
 @app.route('/', methods=['POST'])
 def index():
-    try:
-        return process(request.data.decode())
-    except ImgError:
-        return ''
+    return jsonify(url=process(request.get_json()['url']))
 
+
+def error_handler(error):
+    return jsonify(error=str(error))
+
+for exc in EXCEPTIONS:
+    app.register_error_handler(exc, error_handler)
 
 if __name__ == '__main__':
     app.run()

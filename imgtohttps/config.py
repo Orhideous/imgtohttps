@@ -8,8 +8,10 @@ class Config:
 
 class Development(Config):
     DEBUG = True
+    JSONIFY_PRETTYPRINT_REGULAR = True
     REDIS_URL = 'redis://localhost:6379/0'
 
 
 class Production(Config):
+    JSONIFY_PRETTYPRINT_REGULAR = False
     REDIS_URL = 'redis://localhost:6379/1'

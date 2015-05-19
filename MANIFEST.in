@@ -1,0 +1,6 @@
+graft imgtohttps
+
+include LICENSE
+include README.rst
+
+global-exclude *.py[co] __pycache__

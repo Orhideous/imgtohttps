@@ -74,7 +74,7 @@ class LinksMapping(RedisContainer, Container):
         if result is None:
             raise KeyError
 
-        return result
+        return Link(result.decode())
 
 
 class LinkRegistry(RedisContainer):

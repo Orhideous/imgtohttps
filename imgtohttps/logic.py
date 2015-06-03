@@ -58,12 +58,11 @@ def process(raw_link):
     link = Link(raw_link)
 
     if link in storage.already_uploaded_links:
-        return storage.already_uploaded_links[link]
-
-    if link in storage.insecure_domains:
-        return upload(link).secure
-
-    if link.is_secure or link in storage.secure_domains or has_secure_domain(link):
-        return link.secure
-
-    return upload(link).secure
+        result = storage.already_uploaded_links[link]
+    elif link in storage.insecure_domains:
+        result = upload(link)
+    elif link.is_secure or link in storage.secure_domains or has_secure_domain(link):
+        result = link
+    else:
+        result = upload(link)
+    return result.secure

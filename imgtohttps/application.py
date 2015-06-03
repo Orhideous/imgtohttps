@@ -21,7 +21,7 @@ EXCEPTIONS = (
 )
 
 app = Flask(__name__)
-app.config.from_object(environ.get('APP_SETTINGS', 'config.Development'))
+app.config.from_object(environ.get('APP_SETTINGS', 'settings.Development'))
 storage.init_app(app)
 app.imgur_client = ImgurClient(app.config['IMGUR_CLIENT_ID'], app.config['IMGUR_CLIENT_SECRET'])
 

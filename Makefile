@@ -12,7 +12,7 @@ clean: clean-build clean-pyc
 clean-build:
 	rm -fr build/
 	rm -fr dist/
-	rm -fr nidhogg/*.egg-info
+	rm -fr imgtohttps/*.egg-info
 
 clean-pyc:
 	find . -name '*.pyc' -exec rm -f {} +

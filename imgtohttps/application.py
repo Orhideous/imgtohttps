@@ -1,13 +1,15 @@
 from os import environ
 
-from flask import request, Flask, jsonify
+from flask import request, Flask
 from imgurpython.client import ImgurClient
 from imgurpython.helpers import error as imgur_exc
 from redis import exceptions as redis_exc
 from werkzeug.exceptions import BadRequest
 
+from imgtohttps import logic
+from imgtohttps.lib import Link
 from imgtohttps.lib import EmptyUrlError
-from imgtohttps.logic import process
+from imgtohttps.lib import json
 from imgtohttps.storage import storage
 
 
@@ -26,13 +28,23 @@ storage.init_app(app)
 app.imgur_client = ImgurClient(app.config['IMGUR_CLIENT_ID'], app.config['IMGUR_CLIENT_SECRET'])
 
 
-@app.route('/', methods=['POST'])
-def index():
-    return jsonify(url=process(request.get_json()['url']))
+@app.route('/upload', methods=['POST'])
+@json
+def upload():
+    link = Link(request.get_json().get('url'))
+    return {"url": logic.upload(link).secure}
 
 
+@app.route('/process', methods=['POST'])
+@json
+def process():
+    link = Link(request.get_json().get('url'))
+    return {"url": logic.process(link).secure}
+
+
+@json
 def error_handler(error):
-    return jsonify(error=str(error))
+    return {"error": str(error)}
 
 for exc in EXCEPTIONS:
     app.register_error_handler(exc, error_handler)

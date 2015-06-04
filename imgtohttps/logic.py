@@ -45,17 +45,15 @@ def upload(link):
     return uploaded
 
 
-def process(raw_link):
+def process(link):
     """ Process URL and return possible secure alternative
     or url for uploaded image
 
-    :type raw_link: str
-    :param raw_link: Raw url
+    :type link: Link
+    :param link: Request Link
     :return: Processed url
-    :rtype: str
+    :rtype: Link
     """
-
-    link = Link(raw_link)
 
     if link in storage.already_uploaded_links:
         result = storage.already_uploaded_links[link]
@@ -65,4 +63,4 @@ def process(raw_link):
         result = link
     else:
         result = upload(link)
-    return result.secure
+    return result

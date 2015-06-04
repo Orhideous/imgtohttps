@@ -1,5 +1,8 @@
 from collections.abc import Container
+from functools import wraps
 from urllib.parse import ParseResult, urlparse
+
+from flask import jsonify
 
 
 class EmptyUrlError(Exception):
@@ -89,6 +92,7 @@ class LinkRegistry(RedisContainer):
 
 class Link:
     secure_scheme = 'https'
+    scheme = None
     netloc = None
     path = None
     params = None
@@ -131,3 +135,10 @@ class Link:
             self.query,
             self.fragment
         ).geturl()
+
+
+def json(fn):
+    @wraps(fn)
+    def wrapped(*args, **kwargs):
+        return jsonify(fn(*args, **kwargs))
+    return wrapped

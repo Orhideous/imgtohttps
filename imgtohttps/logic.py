@@ -3,6 +3,7 @@ from flask import current_app
 
 from imgtohttps import storage
 from imgtohttps.lib import Link
+from imgtohttps.lib import json
 
 
 def has_secure_domain(link):
@@ -67,3 +68,9 @@ def process(link):
     else:
         result = upload(link)
     return result
+
+@json
+def error_handler(error):
+    err = str(error)
+    storage.errors_list.append(err)
+    return {"error": err}

@@ -42,12 +42,8 @@ def process():
     return {"url": logic.process(link).secure}
 
 
-@json
-def error_handler(error):
-    return {"error": str(error)}
-
 for exc in EXCEPTIONS:
-    app.register_error_handler(exc, error_handler)
+    app.register_error_handler(exc, logic.error_handler)
 
 if __name__ == '__main__':
     app.run()

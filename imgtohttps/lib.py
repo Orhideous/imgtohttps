@@ -28,6 +28,15 @@ class RedisContainer:
         self.name = name
 
 
+class RedisList(RedisContainer):
+    """ Wrapper class for handling some use cases for
+    redis lists as usual python list
+    """
+
+    def append(self, item):
+        self._storage.lpush(self.name, item)
+
+
 class LinkSet(RedisContainer, Container):
     """ Wrapper class for handling some use cases for
     redis sets as usual python sets

@@ -7,7 +7,7 @@ requirements = open("requirements.txt").read().splitlines(),
 
 setup(
     name='imgtohttps',
-    version='0.5',
+    version='0.5.1',
     description='Simple image uploader',
     long_description=readme,
     author='Andriy Kushnir (Orhideous)',

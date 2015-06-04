@@ -38,6 +38,9 @@ def upload(link):
     :raise ImgError:
     """
 
+    if link in storage.already_uploaded_links:
+        return storage.already_uploaded_links[link]
+
     result = current_app.imgur_client.upload_from_url(link.url)
     uploaded = Link(result['link'])
     storage.image_registry.update(result)
